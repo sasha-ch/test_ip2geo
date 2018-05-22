@@ -1,7 +1,7 @@
 <?php
 
-$params = require __DIR__ . '/params.php';
-$db = require __DIR__ . '/db.php';
+$params = require __DIR__.'/params.php';
+$db = require __DIR__.'/db.php';
 
 $config = [
     'id' => 'basic',
@@ -9,15 +9,26 @@ $config = [
     'bootstrap' => ['log'],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
+        '@npm' => '@vendor/npm-asset',
     ],
     'components' => [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-            'cookieValidationKey' => 'MVuRbIQ0ifjjkB034E7W570U6z6nQg1c',
+            'cookieValidationKey' => 'M4okw6uReYKaaMactn3ukRKkXUq9qkrr',
+        ],
+        'response' => [
+            'format' => 'json',
+            'formatters' => [
+                'json' => ['class' => 'yii\web\JsonResponseFormatter'],
+            ],
         ],
         'cache' => [
-            'class' => 'yii\caching\FileCache',
+            'class' => 'yii\redis\Cache',
+            'redis' => [
+                'hostname' => 'localhost',
+                'port' => 6379,
+                'database' => 4,
+            ],
         ],
         'user' => [
             'identityClass' => 'app\models\User',
@@ -43,14 +54,15 @@ $config = [
             ],
         ],
         'db' => $db,
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
+            'enableStrictParsing' => false,
+            //'ruleConfig' => ['class' => 'yii\rest\UrlRule'],
             'rules' => [
+                'GET ip2geo' => 'geo-ip/index',
             ],
         ],
-        */
     ],
     'params' => $params,
 ];
@@ -61,7 +73,7 @@ if (YII_ENV_DEV) {
     $config['modules']['debug'] = [
         'class' => 'yii\debug\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
+        'allowedIPs' => [$_SERVER['REMOTE_ADDR']],
     ];
 
     $config['bootstrap'][] = 'gii';
